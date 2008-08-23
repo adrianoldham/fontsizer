@@ -9,6 +9,15 @@ var FontSizer = Class.create({
     },
     
     setup: function() {
+        this.lineHeightProportions = [];
+        
+        this.elements.each(function(element) {
+            var size = parseInt(element.getStyle("fontSize"));
+            var lineHeight = parseInt(element.getStyle("lineHeight"));
+            
+            this.lineHeightProportions.push(lineHeight / size);
+        }.bind(this));
+        
         for (var buttonType in this.buttons) {
             this.buttons[buttonType].observe("click", this[buttonType].bindAsEventListener(this));
         }
@@ -26,12 +35,16 @@ var FontSizer = Class.create({
     
     update: function(amount) {
         this.elements.each(function(element) {
-           var size = parseInt(element.getStyle("fontSize")) + amount;
+            var index = this.elements.indexOf(element);
+            
+            var size = parseInt(element.getStyle("fontSize")) + amount;
+            var lineHeight = size * this.lineHeightProportions[index];
            
-           if (size < this.options.range[0]) size = this.options.range[0];
-           if (size > this.options.range[1]) size = this.options.range[1];
+            if (size < this.options.range[0]) size = this.options.range[0];
+            if (size > this.options.range[1]) size = this.options.range[1];
            
-           element.style.fontSize = size + "px";
+            element.style.fontSize = size + "px";
+            if (!isNaN(lineHeight)) element.style.lineHeight = lineHeight + "px";
         }.bind(this));
     }
 });
