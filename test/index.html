@@ -15,7 +15,10 @@
 	<a href="#" id="grow">Bigger</a>
 	
 	<h2 class="sizeme">Title</h2>
-	<p class="sizeme" style="line-height: 20px">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+	<p class="sizeme" style="line-height: 20px">
+		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<span style="font-size: 20px">TEST ME</span>
+	</p>
 	<ul class="sizeme">
 		<li>Test list</li>
 		<li>Item 2</li>
@@ -23,7 +26,7 @@
 	</ul>	
     <script type="text/javascript" charset="utf-8">
         function runTest() {
-			var fontSizer = new FontSizer("shrink", "grow", ".sizeme", { incrementAmount: 1, decrementAmount: 1, range: [-5, 5] });
+			var fontSizer = new FontSizer("shrink", "grow", ".sizeme", { incrementAmount: 1, decrementAmount: 1, range: [0, 5] });
         }
         
         Event.observe(window, "load", runTest);

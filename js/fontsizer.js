@@ -1,11 +1,24 @@
 var FontSizer = Class.create({
     initialize: function(shrinkButton, growButton, selector, options) {
         this.buttons = { shrink: $(shrinkButton), grow: $(growButton) };
-        this.elements = $$(selector);
+        
+        this.elements = [];
+        $$(selector).each(function(element) {
+            this.addChild(element);
+        }.bind(this));
         
         this.options = Object.extend(Object.extend({ }, FontSizer.DefaultOptions), options || { });
         
         this.setup();
+    },
+    
+    addChild: function(element) {
+        if (element == null) return;
+        
+        this.elements.push(element);
+        element.childElements().each(function(el) {
+           this.addChild(el); 
+        }.bind(this));
     },
     
     setup: function() {
@@ -39,17 +52,21 @@ var FontSizer = Class.create({
         this.elements.each(function(element) {
             var index = this.elements.indexOf(element);
             
-            var size = parseInt(element.getStyle("fontSize")) + amount;
-            var lineHeight = parseInt(size * this.lineHeightProportions[index]);
+            var oldSize = parseInt(element.getStyle("fontSize")) ;
+            var size = oldSize + amount;
             
             var smallestSize = this.originalSizes[index] + this.options.range[0];
             var biggestSize = this.originalSizes[index] + this.options.range[1];
-           
+            
             if (size < smallestSize) size = smallestSize;
             if (size > biggestSize) size = biggestSize;
            
             element.style.fontSize = size + "px";
-            if (!isNaN(lineHeight)) element.style.lineHeight = lineHeight + "px";
+            
+            if (oldSize != size) {
+                var lineHeight = parseInt(size * this.lineHeightProportions[index]);
+                if (!isNaN(lineHeight)) element.style.lineHeight = lineHeight + "px";
+            }
         }.bind(this));
     }
 });
