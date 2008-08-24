@@ -3,6 +3,7 @@ var FontSizer = Class.create({
         this.buttons = { shrink: $(shrinkButton), grow: $(growButton) };
         
         this.elements = [];
+        this.hidden = [];
         $$(selector).each(function(element) {
             this.addChild(element);
         }.bind(this));
@@ -16,6 +17,11 @@ var FontSizer = Class.create({
         if (element == null) return;
         
         this.elements.push(element);
+        if (element.style.display == "none") {
+            this.hidden.push(element);
+            element.style.display = "block";
+        }
+        
         element.childElements().each(function(el) {
            this.addChild(el); 
         }.bind(this));
@@ -31,7 +37,13 @@ var FontSizer = Class.create({
             
             this.lineHeightProportions.push(lineHeight / size);
             this.originalSizes.push(size);
+            
+            element.style.fontSize = size + "px";
         }.bind(this));
+        
+        this.hidden.each(function(element) {
+           element.style.display = "none"; 
+        });
         
         for (var buttonType in this.buttons) {
             this.buttons[buttonType].observe("click", this[buttonType].bindAsEventListener(this));
