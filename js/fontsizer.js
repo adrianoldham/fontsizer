@@ -40,7 +40,7 @@ var FontSizer = Class.create({
             var index = this.elements.indexOf(element);
             
             var size = parseInt(element.getStyle("fontSize")) + amount;
-            var lineHeight = size * this.lineHeightProportions[index];
+            var lineHeight = parseInt(size * this.lineHeightProportions[index]);
             
             var smallestSize = this.originalSizes[index] + this.options.range[0];
             var biggestSize = this.originalSizes[index] + this.options.range[1];
