@@ -1,7 +1,5 @@
 var FontSizer = Class.create({
-    initialize: function(shrinkButton, growButton, selector, options) {
-        this.buttons = { shrink: $(shrinkButton), grow: $(growButton) };
-        
+    initialize: function(selector, options) {        
         this.elements = [];
         this.hidden = [];
         $$(selector).each(function(element) {
@@ -11,6 +9,28 @@ var FontSizer = Class.create({
         this.options = Object.extend(Object.extend({ }, FontSizer.DefaultOptions), options || { });
         
         this.setup();
+    },
+    
+    setupButtons: function() {
+        this.buttons = { shrink: $(this.options.decrementButton), grow: $(this.options.incrementButton) };
+        
+        if (this.buttons.shrink == null || this.buttons.grow == null) {
+            var buttonHolder = new Element("p", { "class": this.options.buttonsHolderClass });
+            buttonHolder.insert("Text size: ");
+            
+            this.buttons.shrink = new Element("a", { title: "AccessKey = <", accesskey: "<", href: "#"});
+            this.buttons.shrink.insert(this.options.decrementText);
+            
+            buttonHolder.insert(this.buttons.shrink);
+            buttonHolder.insert(" | ");
+            
+            this.buttons.grow = new Element("a", { title: "AccessKey = >", accesskey: ">", href: "#"});
+            this.buttons.grow.insert(this.options.incrementText);
+            
+            buttonHolder.insert(this.buttons.grow);
+            
+            if (this.elements.length != 0) this.elements[0].insert({ before: buttonHolder });
+        }
     },
     
     addChild: function(element) {
@@ -28,6 +48,8 @@ var FontSizer = Class.create({
     },
     
     setup: function() {
+        this.setupButtons();
+        
         this.lineHeightProportions = [];
         this.originalSizes = [];
         
@@ -70,8 +92,18 @@ var FontSizer = Class.create({
             var smallestSize = this.originalSizes[index] + this.options.range[0];
             var biggestSize = this.originalSizes[index] + this.options.range[1];
             
-            if (size < smallestSize) size = smallestSize;
-            if (size > biggestSize) size = biggestSize;
+            this.buttons.shrink.classNames().remove(this.options.disabledClass);
+            this.buttons.grow.classNames().remove(this.options.disabledClass);
+            
+            if (size <= smallestSize) {
+                size = smallestSize;
+                this.buttons.shrink.classNames().add(this.options.disabledClass);
+            }
+            
+            if (size >= biggestSize) {
+                size = biggestSize;
+                this.buttons.grow.classNames().add(this.options.disabledClass);
+            }
            
             element.style.fontSize = size + "px";
             
@@ -84,7 +116,13 @@ var FontSizer = Class.create({
 });
 
 FontSizer.DefaultOptions = {
-    incrementAmount: 1,   // amount to increase by
-    decrementAmount: 1,   // amoutn to decrease by
-    range: [-5, 5]        // min and max size of the font (relative to the starting size)
+    buttonsHolderClass: "fontsizer",
+    incrementButton: null,              // specify if you don't want the generic buttons
+    decrementButton: null,              // specify if you don't want the generic buttons
+    disabledClass: "disabled",          // class applied to buttons if limit is reached
+    incrementText: "+<sub>A</sub>A",
+    decrementText: "-<sub>A</sub>A",
+    incrementAmount: 1,                 // amount to increase by
+    decrementAmount: 1,                 // amount to decrease by
+    range: [-5, 5]                      // min and max size of the font (relative to the starting size)
 };
