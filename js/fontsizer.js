@@ -122,8 +122,8 @@ FontSizer.DefaultOptions = {
     decrementButton: null,              // specify if you don't want the generic buttons
     disabledClass: "disabled",          // class applied to buttons if limit is reached
     incrementText: "+<sub>A</sub>A",
-    decrementText: "-<sub>A</sub>A",
+    decrementText: "&minus;A<sub>A</sub>",
     incrementAmount: 1,                 // amount to increase by
     decrementAmount: 1,                 // amount to decrease by
-    range: [-5, 5]                      // min and max size of the font (relative to the starting size)
+    range: [0, 5]                      // min and max size of the font (relative to the starting size)
 };
