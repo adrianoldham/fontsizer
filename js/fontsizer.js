@@ -9,6 +9,7 @@ var FontSizer = Class.create({
         this.options = Object.extend(Object.extend({ }, FontSizer.DefaultOptions), options || { });
         
         this.setup();
+        this.update(0);
     },
     
     setupButtons: function() {
