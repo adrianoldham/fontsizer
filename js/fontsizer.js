@@ -2,11 +2,12 @@ var FontSizer = Class.create({
     initialize: function(selector, options) {        
         this.options = Object.extend(Object.extend({ }, FontSizer.DefaultOptions), options || { });
         
-        this.setupButtons(selector);
+        this.selector = selector;
+        this.setupButtons(this.selector);
         
         switch (this.options.trigger) {
             case "onload":
-                this.load(selector);
+                this.load(this.selector);
                 break;
         }
     },
@@ -54,7 +55,6 @@ var FontSizer = Class.create({
         this.buttons.shrink.classNames().add(this.options.disabledClass);
         
         for (var buttonType in this.buttons) {
-            if (this.options.trigger == "onclick") this.buttons[buttonType].observe("click", this.load.bind(this, selector));
             this.buttons[buttonType].observe("click", this[buttonType].bindAsEventListener(this));
         }
     },
@@ -109,6 +109,8 @@ var FontSizer = Class.create({
     },
     
     update: function(amount) {
+        if (!this.loaded) this.load(this.selector);
+        
         this.elements.each(function(element) {
             var index = this.elements.indexOf(element);
             
