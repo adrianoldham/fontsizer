@@ -1,18 +1,35 @@
 var FontSizer = Class.create({
     initialize: function(selector, options) {        
+        this.options = Object.extend(Object.extend({ }, FontSizer.DefaultOptions), options || { });
+        
+        this.setupButtons(selector);
+        
+        switch (this.options.trigger) {
+            case "onload":
+                this.load(selector);
+                break;
+        }
+    },
+    
+    load: function(selector) {
+        if (this.loaded) return;
+        this.loaded = true;
+        
         this.elements = [];
         this.hidden = [];
+        this.excluded = $$(this.options.exclude + " ." + this.options.buttonsHolderClass);
+        
         $$(selector).each(function(element) {
             this.addChild(element);
         }.bind(this));
         
-        this.options = Object.extend(Object.extend({ }, FontSizer.DefaultOptions), options || { });
+        this.excluded = this.excluded.uniq();
         
         this.setup();
         this.update(0);
     },
     
-    setupButtons: function() {
+    setupButtons: function(selector) {
         this.buttons = { shrink: $(this.options.decrementButton), grow: $(this.options.incrementButton) };
         
         if (this.buttons.shrink == null || this.buttons.grow == null) {
@@ -30,12 +47,26 @@ var FontSizer = Class.create({
             
             buttonHolder.insert(this.buttons.grow);
             
-            if (this.elements.length != 0) this.elements[0].insert({ before: buttonHolder });
+            var elements = $$(selector);
+            if (elements.length != 0) elements[0].insert({ top: buttonHolder });
+        }
+        
+        this.buttons.shrink.classNames().add(this.options.disabledClass);
+        
+        for (var buttonType in this.buttons) {
+            if (this.options.trigger == "onclick") this.buttons[buttonType].observe("click", this.load.bind(this, selector));
+            this.buttons[buttonType].observe("click", this[buttonType].bindAsEventListener(this));
         }
     },
     
-    addChild: function(element) {
+    addChild: function(element, exclude) {
         if (element == null) return;
+        
+        if (!exclude) {
+            exclude = this.excluded.indexOf(element) != -1;
+        }
+        
+        if (exclude) this.excluded.push(element);
         
         this.elements.push(element);
         if (element.style.display == "none") {
@@ -44,13 +75,11 @@ var FontSizer = Class.create({
         }
         
         element.childElements().each(function(el) {
-           this.addChild(el); 
+           this.addChild(el, exclude); 
         }.bind(this));
     },
     
     setup: function() {
-        this.setupButtons();
-        
         this.lineHeightProportions = [];
         this.originalSizes = [];
         
@@ -67,10 +96,6 @@ var FontSizer = Class.create({
         this.hidden.each(function(element) {
            element.style.display = "none"; 
         });
-        
-        for (var buttonType in this.buttons) {
-            this.buttons[buttonType].observe("click", this[buttonType].bindAsEventListener(this));
-        }
     },
     
     shrink: function(event) {
@@ -90,6 +115,9 @@ var FontSizer = Class.create({
             var oldSize = parseInt(element.getStyle("fontSize")) ;
             var size = oldSize + amount;
             
+            var exclude = this.excluded.indexOf(element) != -1;
+            if (exclude) size = oldSize;
+            
             var smallestSize = this.originalSizes[index] + this.options.range[0];
             var biggestSize = this.originalSizes[index] + this.options.range[1];
             
@@ -108,7 +136,7 @@ var FontSizer = Class.create({
            
             element.style.fontSize = size + "px";
             
-            if (oldSize != size) {
+            if (oldSize != size || exclude) {
                 var lineHeight = parseInt(size * this.lineHeightProportions[index]);
                 if (!isNaN(lineHeight)) element.style.lineHeight = lineHeight + "px";
             }
@@ -117,13 +145,15 @@ var FontSizer = Class.create({
 });
 
 FontSizer.DefaultOptions = {
-    buttonsHolderClass: "fontsizer",
+    trigger: "onload",
+    exclude: "",                        // selector that selects the elements to exclude from resizing
+    buttonsHolderClass: "fontsizer",    // class added to the font sizer buttons if none is provided
     incrementButton: null,              // specify if you don't want the generic buttons
     decrementButton: null,              // specify if you don't want the generic buttons
     disabledClass: "disabled",          // class applied to buttons if limit is reached
-    incrementText: "+<sub>A</sub>A",
-    decrementText: "&minus;A<sub>A</sub>",
     incrementAmount: 1,                 // amount to increase by
     decrementAmount: 1,                 // amount to decrease by
-    range: [0, 5]                      // min and max size of the font (relative to the starting size)
+    range: [0, 5],                      // min and max size of the font (relative to the starting size)
+    incrementText: "+<sub>A</sub>A",
+    decrementText: "&minus;A<sub>A</sub>"
 };
