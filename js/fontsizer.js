@@ -147,7 +147,7 @@ var FontSizer = Class.create({
 });
 
 FontSizer.DefaultOptions = {
-    trigger: "onload",
+    trigger: "onclick",                 // accepts either onload or onclick
     exclude: "",                        // selector that selects the elements to exclude from resizing
     buttonsHolderClass: "fontsizer",    // class added to the font sizer buttons if none is provided
     incrementButton: null,              // specify if you don't want the generic buttons
