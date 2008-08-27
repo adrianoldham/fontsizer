@@ -153,6 +153,8 @@ var FontSizer = Class.create({
                 if (!isNaN(lineHeight)) element.style.lineHeight = lineHeight + "px";
             }
         }.bind(this));
+        
+        this.options.onResize();
     }
 });
 
@@ -167,5 +169,6 @@ FontSizer.DefaultOptions = {
     decrementAmount: 1,                 // amount to decrease by
     range: [0, 5],                      // min and max size of the font (relative to the starting size)
     incrementText: "+<sub>A</sub>A",
-    decrementText: "&minus;A<sub>A</sub>"
+    decrementText: "&minus;A<sub>A</sub>",
+    onResize: function () {}
 };
