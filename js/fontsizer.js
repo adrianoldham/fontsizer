@@ -2,6 +2,7 @@ var FontSizer = Class.create({
     initialize: function(selector, options) {        
         this.options = Object.extend(Object.extend({ }, FontSizer.DefaultOptions), options || { });
         
+        this.range = 0;
         this.selector = selector;
         this.setupButtons(this.selector);
         
@@ -18,7 +19,7 @@ var FontSizer = Class.create({
         
         this.elements = [];
         this.hidden = [];
-        this.excluded = $$(this.options.exclude + " ." + this.options.buttonsHolderClass);
+        this.excluded = $$(this.options.exclude + ", ." + this.options.buttonsHolderClass);
         
         $$(selector).each(function(element) {
             this.addChild(element);
@@ -111,30 +112,39 @@ var FontSizer = Class.create({
     update: function(amount) {
         if (!this.loaded) this.load(this.selector);
         
+        this.range += amount;
+        
+        this.buttons.shrink.classNames().remove(this.options.disabledClass);
+        this.buttons.grow.classNames().remove(this.options.disabledClass);
+            
+        if (this.range < -this.options.range[0]) {
+            this.buttons.shrink.classNames().add(this.options.disabledClass);
+            this.range = -this.options.range[0];
+        }
+        else if (this.range > this.options.range[1]) {
+            this.buttons.grow.classNames().add(this.options.disabledClass);
+            this.range = this.options.range[1];
+        }
+            
         this.elements.each(function(element) {
             var index = this.elements.indexOf(element);
             
             var oldSize = parseInt(element.getStyle("fontSize")) ;
             var size = oldSize + amount;
             
-            var exclude = this.excluded.indexOf(element) != -1;
-            if (exclude) size = oldSize;
+            if (this.range <= -this.options.range[0]) {
+                size = smallestSize;
+            }
+            
+            if (this.range >= this.options.range[1]) {
+                size = biggestSize;
+            }
+            
+            var exclude = (this.excluded.indexOf(element) != -1);
+            if (exclude == true) size = oldSize;
             
             var smallestSize = this.originalSizes[index] + this.options.range[0];
             var biggestSize = this.originalSizes[index] + this.options.range[1];
-            
-            this.buttons.shrink.classNames().remove(this.options.disabledClass);
-            this.buttons.grow.classNames().remove(this.options.disabledClass);
-            
-            if (size <= smallestSize) {
-                size = smallestSize;
-                this.buttons.shrink.classNames().add(this.options.disabledClass);
-            }
-            
-            if (size >= biggestSize) {
-                size = biggestSize;
-                this.buttons.grow.classNames().add(this.options.disabledClass);
-            }
            
             element.style.fontSize = size + "px";
             
