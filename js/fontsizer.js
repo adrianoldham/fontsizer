@@ -117,11 +117,11 @@ var FontSizer = Class.create({
         this.buttons.shrink.classNames().remove(this.options.disabledClass);
         this.buttons.grow.classNames().remove(this.options.disabledClass);
             
-        if (this.range < -this.options.range[0]) {
+        if (this.range <= -this.options.range[0]) {
             this.buttons.shrink.classNames().add(this.options.disabledClass);
             this.range = -this.options.range[0];
         }
-        else if (this.range > this.options.range[1]) {
+        else if (this.range >= this.options.range[1]) {
             this.buttons.grow.classNames().add(this.options.disabledClass);
             this.range = this.options.range[1];
         }
@@ -130,22 +130,11 @@ var FontSizer = Class.create({
             var index = this.elements.indexOf(element);
             
             var oldSize = parseInt(element.getStyle("fontSize")) ;
-            var size = oldSize + amount;
-            
-            if (this.range <= -this.options.range[0]) {
-                size = smallestSize;
-            }
-            
-            if (this.range >= this.options.range[1]) {
-                size = biggestSize;
-            }
+            var size = this.originalSizes[index] + this.range;
             
             var exclude = (this.excluded.indexOf(element) != -1);
             if (exclude == true) size = oldSize;
-            
-            var smallestSize = this.originalSizes[index] + this.options.range[0];
-            var biggestSize = this.originalSizes[index] + this.options.range[1];
-           
+
             element.style.fontSize = size + "px";
             
             if (oldSize != size || exclude) {
