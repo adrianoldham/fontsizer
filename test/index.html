@@ -46,7 +46,7 @@
 	</ul>	
     <script type="text/javascript" charset="utf-8">
         function runTest() {
-			var fontSizer = new FontSizer(".sizeme", { mode: "em", trigger: "onclick", exclude: ".exclude", incrementAmount: 1, decrementAmount: 1, range: [0, 5] });
+			var fontSizer = new FontSizer(".sizeme", { mode: "relative", trigger: "onclick", exclude: ".exclude", incrementAmount: 1, decrementAmount: 1, range: [0, 5] });
         }
         
         Event.observe(window, "load", runTest);

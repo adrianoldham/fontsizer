@@ -75,7 +75,7 @@ var FontSizer = Class.create({
             element.style.display = "block";
         }
         
-        if (this.options.mode == 'px') {
+        if (this.options.mode == 'precise') {
             element.childElements().each(function(el) {
                this.addChild(el, exclude); 
             }.bind(this));   
@@ -150,7 +150,7 @@ var FontSizer = Class.create({
 });
 
 FontSizer.DefaultOptions = {
-    mode: "px",                         // Set the mode to 'em' or 'px' (note that exclude wont work for em mode)
+    mode: "precise",                    // Set the mode to 'relative' or 'precise' (note that exclude wont work for relative mode)
     trigger: "onclick",                 // accepts either onload or onclick
     exclude: "",                        // selector that selects the elements to exclude from resizing
     buttonsHolderClass: "fontsizer",    // class added to the font sizer buttons if none is provided
