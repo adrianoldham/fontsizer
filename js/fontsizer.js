@@ -83,12 +83,20 @@ var FontSizer = Class.create({
     },
     
     setup: function() {
+        var isIE = (Prototype.Browser.IE && navigator.platform == "Win32");
+        
         this.lineHeightProportions = [];
         this.originalSizes = [];
         
         this.elements.each(function(element) {
-            var size = parseInt(element.getStyle("fontSize"));
-            var lineHeight = parseInt(element.getStyle("lineHeight"));
+            // work around an issue where IE returns css units instead of rendered pixels
+            if (isIE && this.options.mode == "relative") {
+                var size = this.options.baseFontSize;
+                var lineHeight = this.options.baseLineHeight;
+            } else {
+                var size = parseInt(element.getStyle("fontSize"));
+                var lineHeight = parseInt(element.getStyle("lineHeight"));
+            }
             
             this.lineHeightProportions.push(lineHeight / size);
             this.originalSizes.push(size);
@@ -160,6 +168,8 @@ FontSizer.DefaultOptions = {
     incrementAmount: 1,                 // amount to increase by
     decrementAmount: 1,                 // amount to decrease by
     range: [0, 5],                      // min and max size of the font (relative to the starting size)
+    baseFontSize: 12,                   // used only in IE for 'relative' mode
+    baseLineHeight: 18,                 // used only in IE for 'relative' mode
     incrementText: "+<sub>A</sub>A",
     decrementText: "&minus;A<sub>A</sub>",
     onResize: function () {}
